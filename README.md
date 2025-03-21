@@ -78,7 +78,6 @@ You can personalize your AI assistant’s behavior:
   - Run the following before installing `pyaudio`:
   
     ```sh
-    pip install pipwin
     pipwin install pyaudio
     ```
 
