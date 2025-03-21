@@ -78,7 +78,7 @@ You can personalize your AI assistant’s behavior:
   - Run the following before installing `pyaudio`:
   
     ```sh
-    pipwin install pyaudio
+    pip install pyaudio
     ```
 
 - **API Key Not Working?**
