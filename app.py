@@ -16,6 +16,7 @@ from dotenv import load_dotenv
 import speech_recognition as sr #converts voice commands into text
 import pyttsx3 # read out text output to voice
 import webbrowser # to handle certain activities on my web browser
+import re
 
 load_dotenv()
 
@@ -23,20 +24,26 @@ genai.configure(api_key=os.getenv('api_data'))
 
 # Create the model
 generation_config = {
-  "temperature": 1,
-  "top_p": 0.95,
-  "top_k": 64,
-  "max_output_tokens": 8192,
-  "response_mime_type": "text/plain",
+  "temperature": 0.3,
+  "top_p": 0.8,
+  "top_k": 20,
+  "max_output_tokens": 512,
+  "response_mime_type": "text/markdown",
 }
 
 # Set your own instructions here
 
 model = genai.GenerativeModel(
-  model_name="learnlm-1.5-pro-experimental",
+  model_name="gemini-2.0-flash-exp",
   generation_config=generation_config,
-  #system_instruction="Act as your a Philosopher in each and every matter",
+#   system_instruction="",
 )
+
+# Convert to Markdown
+
+def strip_markdown(model_response):
+    return re.sub(r'\*\*(.*?)\*\*', r'\1', model_response)  # Remove bold formatting
+
 
 # response model
 
@@ -59,7 +66,7 @@ def Reply(user_input):
     history.append({"role": "user", "parts": [user_input]})
     history.append({"role": "model", "parts": [model_response]})
 
-    return model_response
+    return strip_markdown(model_response)  # Return the response Markdown formatting
 
     '''print(f'Bot: {model_response}')
     print()'''
@@ -145,9 +152,9 @@ if __name__ == "__main__":
         # Sleep mode
         if "bye" in query:
             active = False
-            speech("Napping now, fam! Say 'Yo, Lohith' when you need me.")
+            speech("Napping now, Say 'Wake up' when you need me.")
         
         if "finish" in query:
             active = False
-            speech("Alright, I’m out for real this time. Catch you later, fam!")
+            speech(f"Alright, I am finishing the conversation now. Have a great day!")
             break  # Exit the loop, end the program
