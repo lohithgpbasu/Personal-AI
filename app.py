@@ -28,7 +28,7 @@ generation_config = {
   "top_p": 0.8,
   "top_k": 20,
   "max_output_tokens": 512,
-  "response_mime_type": "text/markdown",
+  "response_mime_type": "text/plain",
 }
 
 # Set your own instructions here
@@ -36,7 +36,7 @@ generation_config = {
 model = genai.GenerativeModel(
   model_name="gemini-2.0-flash-exp",
   generation_config=generation_config,
-#   system_instruction="",
+  system_instruction="Response in Shorter text, concise and to the point. ",
 )
 
 # Convert to Markdown
@@ -66,6 +66,8 @@ def Reply(user_input):
     history.append({"role": "user", "parts": [user_input]})
     history.append({"role": "model", "parts": [model_response]})
 
+    # print(f'Bot: {model_response}')
+
     return strip_markdown(model_response)  # Return the response Markdown formatting
 
     '''print(f'Bot: {model_response}')
@@ -89,7 +91,7 @@ def takeCommands(active=True):
     with sr.Microphone() as source:
         r.energy_threshold = 300 if active else 1000  # Higher threshold needs louder tone
         r.dynamic_energy_threshold = True  # Adapts to background noise
-        print("Listening..." if active else "Sleeping, say 'Yo, Lohith' to wake me...")
+        print("Listening..." if active else "Sleeping, say 'Wake Up' to wake me...")
         r.pause_threshold = 1
         audio = r.listen(source)  # No timeout, always listening
     try:
@@ -107,13 +109,13 @@ if __name__ == "__main__":
         query = takeCommands(active)
         if query == "none":
             if active:
-                speech("Yo, say that again—mic’s acting sus.")
+                speech("I didn't catch that, can you repeat?")
             continue
 
         # Wake-up logic
-        if not active and "yo lohith" in query:
+        if not active and "Wake up" in query:
             active = True
-            speech("I’m up, fam! What’s the word?")
+            speech("I’m up, What’s the word?")
             continue
 
         # Skip processing if not active
@@ -125,11 +127,11 @@ if __name__ == "__main__":
         try:
             if "open youtube" in query:
                 webbrowser.open("https://www.youtube.com")
-                speech("YouTube poppin’!")
+                speech("Openning YouTube, let’s vibe!")
                 handled = True
             elif "open google" in query:
                 webbrowser.open("https://www.google.com")
-                speech("Google, got you!")
+                speech("Google, here we come!")
                 handled = True
             elif "search" in query and "on google" in query:
                 search_term = query.replace("search", "").replace("on google", "").strip()
@@ -156,5 +158,5 @@ if __name__ == "__main__":
         
         if "finish" in query:
             active = False
-            speech(f"Alright, I am finishing the conversation now. Have a great day!")
+            print(Reply(query))
             break  # Exit the loop, end the program
